@@ -1,6 +1,6 @@
 # Aubretia
 
-Aubretia is image-search application built with Flutter. 
+Aubretia is image search application built with Flutter. 
 
 The app supports sharing images from other applications and provides a simple interface to search using popular image search engines.
 
