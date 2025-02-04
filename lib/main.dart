@@ -77,10 +77,7 @@ void initSharingListener() {
   _intentDataStreamSubscription = FlutterSharingIntent.instance
       .getMediaStream()
       .listen((List<SharedFile> value) {
-    setState(() {
-      sharedFiles = value;
-    });
-    print("Shared: getMediaStream ${value.map((f) => f.value).join(",")}");
+    _handleSharedFiles(value);
   }, onError: (err) {
     print("Shared: getIntentDataStream error: $err");
   });
@@ -88,22 +85,39 @@ void initSharingListener() {
   FlutterSharingIntent.instance
       .getInitialSharing()
       .then((List<SharedFile> value) {
-    setState(() {
-      sharedFiles = value;
-    });
-    print("Shared: getInitialMedia => ${value.map((f) => f.value).join(",")}");
-    print("Initial sharedFiles: $sharedFiles"); // Log the sharedFiles list
-
-    // Check if there is a URL in the shared data
-    String? url = value.isNotEmpty ? value[0].value : null; // Assuming the first item might be a URL
-    if (url != null && url.startsWith('http')) {
-      // Handle the URL as needed
-      print("Shared URL: $url");
-    } else {
-      // Handle the case where no URL is found
-      print("No URL found in shared data.");
-    }
+    _handleSharedFiles(value);
   });
+}
+
+void _handleSharedFiles(List<SharedFile> sharedFiles) {
+  setState(() {
+    this.sharedFiles = sharedFiles;
+  });
+  
+  print("Shared files: ${sharedFiles.map((f) => f.value).join(",")}");
+
+  String? imageUrl;
+  String? imageFilePath;
+
+  // Check for shared files
+  for (var file in sharedFiles) {
+    if (file.value?.startsWith('http') == true) {
+      // If the shared item is a URL
+      imageUrl = file.value;
+      print("Shared URL: $imageUrl");
+    } else {
+      // If it's an image file, store its path
+      imageFilePath = file.value;
+      print("Shared image file: $imageFilePath");
+    }
+  }
+
+  // Handle the case where no URL is found
+  if (imageUrl == null && imageFilePath != null) {
+    print("No URL found, only image file: $imageFilePath");
+  } else if (imageUrl == null) {
+    print("No URL or image file found.");
+  }
 }
 
 @override
@@ -228,9 +242,30 @@ void initSharingListener() {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black, // Make the scaffold background transparent
+      backgroundColor: Colors.black,
       body: Center(
-        child: Container(), // No additional content
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              alignment: Alignment.center, // Center the text within the container
+              padding: EdgeInsets.symmetric(horizontal: 20), // Add horizontal padding
+              child: Text(
+                "Share a direct link to an image \n from any app to Aubretia.", // Centered message
+                textAlign: TextAlign.center, // Center the text
+                style: TextStyle(
+                  color: Colors.white, // Change text color as needed
+                  fontSize: 18, // Adjust font size as needed
+                ),
+              ),
+            ),
+            SizedBox(height: 200), // Space between message and exit button
+            ElevatedButton(
+              onPressed: () => _closeApp(context), // Exit button
+              child: Text("Exit App"),
+            ),
+          ],
+        ),
       ),
     );
   }
