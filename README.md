@@ -12,6 +12,7 @@ The app supports sharing images from other applications and provides a simple in
   - Ascii2d
   - Google Images
   - Google Lens
+- **Adaptive**: The app automatically adjusts to your system's theme settings.
 
 
 ## Getting Started
@@ -43,7 +44,7 @@ You can also download the APK directly from the [releases](https://github.com/ic
 ### Usage
 
 1. Open the app on your Android device.
-2. Share a direct link to an image from any app to Aubretia.
+2. Share a direct link to an image from any app to Aubretia or paste it inside the app.
 > **Note**: Ensure that the link is a direct URL to the image (e.g., ending in .jpg, .png, etc.).
     
 3. A bottom sheet will appear with options to search the shared image using different services.
@@ -59,7 +60,10 @@ You can also download the APK directly from the [releases](https://github.com/ic
 - [flower icons](https://www.flaticon.com/free-icons/flower) - Flower icons created by jocularityart - Flaticon.
 
 ### UI
-<img src="./assets/Screenshot.jpg" alt="ui" width="400" height="880" />
+<div style="display: flex;">
+    <img src="./assets/Screenshot2.jpg" alt="ui" width="400" height="880" style="margin-right: 10px;" />
+    <img src="./assets/Screenshot.jpg" alt="ui" width="400" height="880" />
+</div>
 
 
 
