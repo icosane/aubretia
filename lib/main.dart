@@ -21,9 +21,9 @@ class MyApp extends StatelessWidget {
           seedColor: Colors.purple,
           brightness: Brightness.light,
         ),
-        scaffoldBackgroundColor: Colors.white, // Set a solid color for light theme
+        scaffoldBackgroundColor: Colors.white, // Light theme background
         appBarTheme: AppBarTheme(
-          backgroundColor: Colors.purple, // Set app bar color
+          backgroundColor: Colors.purple,
           elevation: 0,
         ),
       ),
@@ -32,15 +32,15 @@ class MyApp extends StatelessWidget {
           seedColor: Colors.purple,
           brightness: Brightness.dark,
         ),
-        scaffoldBackgroundColor: Colors.black, // Set a solid color for dark theme
+        scaffoldBackgroundColor: Colors.black, // Dark theme background
         appBarTheme: AppBarTheme(
-          backgroundColor: Colors.purple, // Set app bar color
+          backgroundColor: Colors.purple,
           elevation: 0,
         ),
       ),
-      themeMode: ThemeMode.system, // Automatically switch based on system theme
+      themeMode: ThemeMode.system,
       home: MyHomePage(),
-      debugShowCheckedModeBanner: false, // Hide the debug banner
+      debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -194,7 +194,10 @@ void _handleSharedFiles(List<SharedFile> sharedFiles) {
   }
 
   void _buttonClick(String buttonName) async {
-    if (sharedFiles == null || sharedFiles!.isEmpty) return;
+    if (sharedFiles == null || sharedFiles!.isEmpty) {
+      _showDialog("No URLs to process.");
+      return;
+    }
 
     // Filter to get only the URLs
     List<String> urls = sharedFiles!
@@ -203,7 +206,18 @@ void _handleSharedFiles(List<SharedFile> sharedFiles) {
         .cast<String>() // Cast to List<String>
         .toList();
 
-    if (urls.isEmpty) return; // Exit if no valid URLs
+    // Check if the shared file is an image and no URLs are found
+    if (urls.isEmpty) {
+      // Check if any shared file is an image
+      bool isImageShared = sharedFiles!.any((file) => file.value != null && file.value!.endsWith('.jpg') || file.value!.endsWith('.png') || file.value!.endsWith('.jpeg') || file.value!.endsWith('.webp'));
+
+      if (isImageShared) {
+        _showDialog("Please share a direct link to the image instead of an image file.");
+      } else {
+        _showDialog("No valid URLs found.");
+      }
+      return; // Exit if no valid URLs
+    }
 
     String sharedUrl = Uri.encodeComponent(urls[0]); // Use the first valid URL
     String url = ''; // Declare the url variable
@@ -231,6 +245,27 @@ void _handleSharedFiles(List<SharedFile> sharedFiles) {
     }
   }
 
+  void _showDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Error"),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: Text("OK"),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
   void _closeApp(BuildContext context) {
     // Delay for a short duration to allow animations to complete
     Future.delayed(Duration(milliseconds: 300), () {
@@ -242,26 +277,26 @@ void _handleSharedFiles(List<SharedFile> sharedFiles) {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor, // Use the theme's scaffold background color
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              alignment: Alignment.center, // Center the text within the container
-              padding: EdgeInsets.symmetric(horizontal: 20), // Add horizontal padding
+              alignment: Alignment.center,
+              padding: EdgeInsets.symmetric(horizontal: 20),
               child: Text(
-                "Share a direct link to an image \n from any app to Aubretia.", // Centered message
-                textAlign: TextAlign.center, // Center the text
+                "Share a direct link to an image \n from any app to Aubretia.",
+                textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: Colors.white, // Change text color as needed
-                  fontSize: 18, // Adjust font size as needed
+                  color: Theme.of(context).colorScheme.onSurface, // Use onBackground color for text
+                  fontSize: 18,
                 ),
               ),
             ),
-            SizedBox(height: 200), // Space between message and exit button
+            SizedBox(height: 200),
             ElevatedButton(
-              onPressed: () => _closeApp(context), // Exit button
+              onPressed: () => _closeApp(context),
               child: Text("Exit App"),
             ),
           ],
